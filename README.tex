@@ -1,0 +1,214 @@
+% Created 2023-11-28 Tue 13:47
+% Intended LaTeX compiler: pdflatex
+\documentclass[presentation, smaller]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+\usetheme[]{default}
+\usepackage{tikz}
+\usetikzlibrary[topaths] \newcount\mycount
+\usepackage{pgf}
+
+\pgfmathsetseed{\number\pdfrandomseed} % to ensure that it is randomized
+% use \randomseed for xelatex
+
+\newcommand{\thecmd}[1]{%
+\pgfmathsetmacro{\thenum}{int(random(ceil(#1-#1/4),floor(#1+#1/4)))}%
+\thenum%
+}%
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{amsthm}
+\usepackage[utf8]{inputenc}
+
+\colorlet{shadecolor}{CoalGray!15}
+
+\newcommand{\propnumber}{} % initialize
+\newtheorem*{prop}{Proposition \propnumber}
+\newenvironment{propc}[1]
+{\renewcommand{\propnumber}{#1}%
+\begin{prop}}
+{\end{prop}}
+\frenchspacing
+\usetheme{purduegold}
+\author{John Biechele-Speziale, Kushagra Kapoor, Jae Heo}
+\date{\today}
+\title{POMDPs: Myths, Legends, and Reality}
+\hypersetup{
+ pdfauthor={John Biechele-Speziale, Kushagra Kapoor, Jae Heo},
+ pdftitle={POMDPs: Myths, Legends, and Reality},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.1 (Org mode 9.6.1)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Outline}
+\setcounter{tocdepth}{1}
+\tableofcontents
+\end{frame}
+
+\setbeamertemplate{footline}[frame number]
+
+\section{What are POMDPs?}
+\label{sec:org4e92377}
+
+\begin{frame}[label={sec:orgbebae4d}]{POMDPs are MDPs with sensors instead of direct observation of the current state.}
+\begin{itemize}
+\item The sensors are some probability distribution of some observation given a certain state.
+\pause
+\item Unlike traditional MDPs that map from states to actions, these map from belief states(observations) to actions.
+\pause
+\item Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.\footcite{woodcockFormalMethodsPractice2009}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org6d9aed9}]{POMDPs are defined by a tuple \((S,A,T,R,\Omega,O,\gamma)\)}
+\begin{itemize}
+\item S is the set of states
+\pause
+\item A is the set of actions
+\pause
+\item T is the state transition probability
+\pause
+\item R is the reward function
+\pause
+\item \(\Omega\) is the set of observations
+\pause
+\item O is the set of conditional observation probabilities
+\pause
+\item \(\gamma\) is the discount factor.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgafb8e18}]{POMDPs rely on a belief update step, which itself can be an MDP.}
+\begin{itemize}
+\item a
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgace4593}]{Value and policy function parameterizations}
+\begin{itemize}
+\item a
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org6e7b2c9}]{The need for approximations}
+\begin{itemize}
+\item a
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgdab8c83}]{Theory and undecidability}
+\begin{itemize}
+\item a
+\end{itemize}
+\end{frame}
+
+\section{POMDP Variants and Applications}
+\label{sec:orgd471382}
+
+\begin{frame}[label={sec:org398f9e8}]{Test}
+\begin{itemize}
+\item a
+\end{itemize}
+\end{frame}
+
+\section{Implementation Recommendations}
+\label{sec:org86ca638}
+
+\begin{frame}[label={sec:org3ef719a},fragile]{My favorite package: POMDPs.jl}
+ \begin{verbatim}
+using Pkg; Pkg.add("POMDPs"); Pkg.add("QMDP");
+using POMDPs, QuickPOMDPs, POMDPTools, QMDP
+
+m = QuickPOMDP(
+    states = ["left", "right"],
+    actions = ["left", "right", "listen"],
+    observations = ["left", "right"],
+    initialstate = Uniform(["left", "right"]),
+    discount = 0.95,
+    transition = function (s, a)
+        if a == "listen"
+            return Deterministic(s) # tiger stays behind the same door
+        else # a door is opened
+            return Uniform(["left", "right"]) # reset
+        end
+    end,
+    observation = function (s, a, sp)
+        if a == "listen"
+            if sp == "left"
+                return SparseCat(["left", "right"], [0.85, 0.15]) # sparse categorical distribution
+            else
+                return SparseCat(["right", "left"], [0.85, 0.15])
+            end
+        else
+            return Uniform(["left", "right"])
+        end
+    end,
+    reward = function (s, a)
+        if a == "listen"
+            return -1.0
+        elseif s == a # the tiger was found
+            return -100.0
+        else # the tiger was escaped
+            return 10.0
+        end
+    end
+)
+
+solver = QMDPSolver()
+policy = solve(solver, m)
+
+rsum = 0.0
+for (s,b,a,o,r) in stepthrough(m, policy, "s,b,a,o,r", max_steps=10)
+    println("s: $s, b: $([s=>pdf(b,s) for s in states(m)]), a: $a, o: $o")
+    global rsum += r
+end
+println("Undiscounted reward was $rsum.")
+\end{verbatim}
+
+\begin{itemize}
+\item \href{https://github.com/JuliaPOMDP/POMDPGallery.jl}{More Examples}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org401406d}]{Alternative Packages}
+\begin{itemize}
+\item \href{https://www.cs.kent.ac.uk/people/staff/mg483/code/IsoFreeBB/}{Finite-state Controllers using Branch and Bound}
+\item \href{https://github.com/mhahsler/pomdp}{pomdp}
+\item \href{https://bitbucket.org/bami/pypomdp}{pyPOMDP}
+\item \href{https://longhorizon.org/trey/zmdp/}{zmdp}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org91dcf76}]{Temp 1}
+\end{frame}
+
+\begin{frame}[label={sec:orgcb7b989}]{Temp 2}
+\end{frame}
+
+\begin{frame}[label={sec:org635494e}]{Temp 3}
+\end{frame}
+
+\begin{frame}[label={sec:orge4aa7b3}]{Temp 4}
+\end{frame}
+
+\begin{frame}[label={sec:org1a149b7}]{Temp 5}
+\end{frame}
+
+\begin{frame}[label={sec:org9887ed5}]{References}
+\nocite{*}
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+\end{frame}
+\end{document}

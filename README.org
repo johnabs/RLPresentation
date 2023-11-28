@@ -1,0 +1,152 @@
+#+title: POMDPs: Myths, Legends, and Reality
+#+AUTHOR: John Biechele-Speziale, Kushagra Kapoor, Jae Heo
+#+OPTIONS: H:2 toc:1
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation, smaller]
+#+LaTeX_HEADER: \usepackage{amsmath,amssymb}
+#+LaTeX_HEADER: \usetheme[]{default}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usetikzlibrary[topaths] \newcount\mycount
+#+LaTeX_HEADER: \usepackage{pgf}
+#+LaTeX_HEADER:
+#+LaTeX_HEADER: \pgfmathsetseed{\number\pdfrandomseed} % to ensure that it is randomized
+#+LaTeX_HEADER: % use \randomseed for xelatex
+#+LaTeX_HEADER:
+#+LaTeX_HEADER: \newcommand{\thecmd}[1]{%
+#+LaTeX_HEADER: \pgfmathsetmacro{\thenum}{int(random(ceil(#1-#1/4),floor(#1+#1/4)))}%
+#+LaTeX_HEADER: \thenum%
+#+LaTeX_HEADER: }%
+#+LaTeX_HEADER: \usepackage{xcolor}
+#+LaTeX_HEADER: \usepackage{framed}
+#+LaTeX_HEADER: \usepackage{amsthm}
+#+LaTeX_HEADER: \usepackage[utf8]{inputenc}
+#+LaTeX_HEADER:
+#+LaTeX_HEADER: \colorlet{shadecolor}{CoalGray!15}
+#+LaTeX_HEADER:
+#+LaTeX_HEADER: \newcommand{\propnumber}{} % initialize
+#+LaTeX_HEADER: \newtheorem*{prop}{Proposition \propnumber}
+#+LaTeX_HEADER: \newenvironment{propc}[1]
+#+LaTeX_HEADER:   {\renewcommand{\propnumber}{#1}%
+#+LaTeX_HEADER:    \begin{prop}}
+#+LaTeX_HEADER:   {\end{prop}}
+#+LaTeX_HEADER: \frenchspacing
+#+BEAMER_THEME: purduegold
+#+BEAMER_FRAME_LEVEL: 2
+
+    \setbeamertemplate{footline}[frame number]
+
+* What are POMDPs?
+
+** POMDPs are MDPs with sensors instead of direct observation of the current state.
+- The sensors are some probability distribution of some observation given a certain state.
+  \pause
+- Unlike traditional MDPs that map from states to actions, these map from belief states(observations) to actions.
+  \pause
+- Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.[[footcite:&woodcockFormalMethodsPractice2009]]
+
+** POMDPs are defined by a tuple $(S,A,T,R,\Omega,O,\gamma)$
+- S is the set of states
+  \pause
+- A is the set of actions
+  \pause
+- T is the state transition probability
+  \pause
+- R is the reward function
+  \pause
+- $\Omega$ is the set of observations
+  \pause
+- O is the set of conditional observation probabilities
+  \pause
+- $\gamma$ is the discount factor.
+
+** POMDPs rely on a belief update step, which itself can be an MDP.
+- a
+
+** Value and policy function parameterizations
+- a
+
+** The need for approximations
+- a
+
+** Theory and undecidability
+- a
+
+* POMDP Variants and Applications
+
+** Test
+- a
+
+* Implementation Recommendations
+
+** My favorite package: POMDPs.jl
+#+begin_src julia
+using Pkg; Pkg.add("POMDPs"); Pkg.add("QMDP");
+using POMDPs, QuickPOMDPs, POMDPTools, QMDP
+
+m = QuickPOMDP(
+    states = ["left", "right"],
+    actions = ["left", "right", "listen"],
+    observations = ["left", "right"],
+    initialstate = Uniform(["left", "right"]),
+    discount = 0.95,
+    transition = function (s, a)
+        if a == "listen"
+            return Deterministic(s) # tiger stays behind the same door
+        else # a door is opened
+            return Uniform(["left", "right"]) # reset
+        end
+    end,
+    observation = function (s, a, sp)
+        if a == "listen"
+            if sp == "left"
+                return SparseCat(["left", "right"], [0.85, 0.15]) # sparse categorical distribution
+            else
+                return SparseCat(["right", "left"], [0.85, 0.15])
+            end
+        else
+            return Uniform(["left", "right"])
+        end
+    end,
+    reward = function (s, a)
+        if a == "listen"
+            return -1.0
+        elseif s == a # the tiger was found
+            return -100.0
+        else # the tiger was escaped
+            return 10.0
+        end
+    end
+)
+
+solver = QMDPSolver()
+policy = solve(solver, m)
+
+rsum = 0.0
+for (s,b,a,o,r) in stepthrough(m, policy, "s,b,a,o,r", max_steps=10)
+    println("s: $s, b: $([s=>pdf(b,s) for s in states(m)]), a: $a, o: $o")
+    global rsum += r
+end
+println("Undiscounted reward was $rsum.")
+#+end_src
+
+- [[https://github.com/JuliaPOMDP/POMDPGallery.jl][More Examples]]
+
+** Alternative Packages
+- [[https://www.cs.kent.ac.uk/people/staff/mg483/code/IsoFreeBB/][Finite-state Controllers using Branch and Bound]]
+- [[https://github.com/mhahsler/pomdp][pomdp]]
+- [[https://bitbucket.org/bami/pypomdp][pyPOMDP]]
+- [[https://longhorizon.org/trey/zmdp/][zmdp]]
+** Temp 1
+
+** Temp 2
+
+** Temp 3
+
+** Temp 4
+
+** Temp 5
+
+** References
+\nocite{*}
+[[bibliographystyle:ieeetr]]
+[[bibliography:/home/johnbs/Documents/IE/Classes/Reinforcement_Learning/Presentation/ref.bib][ref]]
