@@ -79,7 +79,7 @@
         \end{itemize}
         \item Problem: Continuous MDP
         \begin{itemize}
-            \item key insight is that the finite horizon value function is piecewise linear and convex (PWLC) for every horizon length
+            \item \textbf{key insight}: finite horizon value function is \textbf{piecewise linear and convex (PWLC)}
         \end{itemize}
         
     \end{itemize}
@@ -87,38 +87,86 @@
 \end{frame}
 
 \begin{frame}{Model-Based Approaches: Value Iteration}
-    \begin{itemize}
-     \includegraphics[scale = 0.3]{pic_1.png}
-    \includegraphics[scale = 0.32]{pic_3.png}
-    \end{itemize}
-    
+\begin{figure}
+    \centering
+    \includegraphics[scale = 0.2]{pic_1_1.png}
+    \caption{Value function for a continuous belief space}
+    \label{fig:enter-label}
+\end{figure}
+ \begin{figure}
+    \centering
+    \includegraphics[scale = 0.25]{pic_2.png}
+    \caption{Value function is PWLC}
+    \label{fig:enter-label}
+\end{figure}
 \end{frame}
 
-\begin{frame}{Model-based Approaches: Value Iteration Algorithms}
+\begin{frame}{Model-Based Approaches: Value Iteration}
+\begin{figure}
+    \centering
+    \includegraphics[scale = 0.2]{pic_3.png}
+    \caption{Value function for a continuous belief space}
+    \label{fig:enter-label}
+\end{figure}
+\begin{itemize}
+    \item Big Picture: We have used properties of POMDP to simplify the problem.
+    \item \textbf{Big Problem?} How to generate a finite set of points so that we can construct all of the vectors in V' (Value function for the next belief state)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Model-based Approaches: Monahan’s Enumeration Algorithm (1982)}
   \textbf{Monahan’s Enumeration Algorithm:}
   \begin{itemize}
     \item Calculates all possible ways HPOMDPVn could be constructed.
     \item Exploits the known structure of the value function.
     \item Generates a finite number of vectors in each HPOMDPVn.
+    \item \textbf{Exponential increase} in cardinality: $|A||Vn|^{|O|}$
+    \item Regions of many generated vectors are empty and useless.
+    \item \textbf{Insight:} Pruning required
+
   \end{itemize}
 
+\end{frame}
+\begin{frame}{Model-based Approaches: Incremental Pruning Algorithm (1996)}
   \textbf{Incremental Pruning:}
   \begin{itemize}
     \item Saves computation time by pruning dominated vectors incrementally.
-    \item Utilizes the property: $prune(G⊕G'⊕G'') = prune(prune(G⊕G')⊕G'')$.
+    \item Recursively prunes vectors by solving a linear program. 
     \item Leads to better performance with a slow growth of constraints in the linear program.
+    \item Computing exact solutions for POMDPs is \textbf{intractable, approximate solutions required.}
+    
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Model-based Approaches: Point-based Value Iteration Methods}
   \textbf{Approximate Solutions:}
   \begin{itemize}
+    \item \textbf{Intuition: What parts of belief space are reachable? }
     \item Focuses on computing solutions for reachable parts of the belief simplex.
-    \item Uses a sampled set of belief points for planning.
+    \item Let the agent interact with the environment, plan over the limited set of beliefs
     \item Allows planning on a limited set of prototype beliefs, making it tractable for large state spaces.
+    \item \textbf{Assumption}: updating not only value but also its gradient, the
+resulting policy will generalize well and be effective for beliefs outside the set B.
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Model-based Approaches: Point-based Value Iteration Methods}
+  \textbf{An Example:}
+  \begin{itemize}
+   \item Ghasemi et. al. (2019)
+   \item \textbf{key innovation}: integration of planning and perception decisions through a greedy strategy for observation selection
+    \item  Avoids
+combinatorial expansion of the action space
+by minimizing an information-theoretic measure of
+the state uncertainty.
+\item involves iteratively updating a set of belief points and their corresponding alpha vectors through a process of sampling, backup, and pruning.
+  \end{itemize}
+  \begin{figure}
+      \centering
+      \includegraphics[scale=0.3]{mahsa.png}
+      \label{fig:enter-label}
+  \end{figure}
+\end{frame}
 
 \begin{frame}{Approximate Methods}
   \textbf{Grid-based Approaches:}
