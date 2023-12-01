@@ -1,4 +1,4 @@
-% Created 2023-11-28 Tue 13:47
+% Created 2023-11-30 Thu 21:41
 % Intended LaTeX compiler: pdflatex
 \documentclass[presentation, smaller]{beamer}
 \usepackage[utf8]{inputenc}
@@ -61,77 +61,82 @@
 \setbeamertemplate{footline}[frame number]
 
 \section{What are POMDPs?}
-\label{sec:org4e92377}
+\label{sec:org3c744cc}
 
-\begin{frame}[label={sec:orgbebae4d}]{POMDPs are MDPs with sensors instead of direct observation of the current state.}
+\begin{frame}[label={sec:org25d4a61}]{POMDPs are MDPs with sensors instead of direct observation of the current state.}
 \begin{itemize}
 \item The sensors are some probability distribution of some observation given a certain state.
 \pause
 \item Unlike traditional MDPs that map from states to actions, these map from belief states(observations) to actions.
 \pause
-\item Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.\footcite{woodcockFormalMethodsPractice2009}
+\item Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.
 \end{itemize}
+\pause
+\begin{center}
+\includegraphics[width=0.8\textwidth]{fig1.jpg}
+\end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org6d9aed9}]{POMDPs are defined by a tuple \((S,A,T,R,\Omega,O,\gamma)\)}
+\begin{frame}[label={sec:orgacaa6fe}]{POMDPs are defined by a tuple \((S,A,T,R,\Omega,O,\gamma)\)}
 \begin{itemize}
 \item S is the set of states
 \pause
 \item A is the set of actions
 \pause
-\item T is the state transition probability
+\item T is the state transition probability \(P(s'|s,a)\)
 \pause
-\item R is the reward function
+\item R is the reward function \(R(s,a)\)
 \pause
 \item \(\Omega\) is the set of observations
 \pause
-\item O is the set of conditional observation probabilities
+\item O is the set of conditional observation probabilities \(P(o|s') \lor P(o|s',a)\)
 \pause
 \item \(\gamma\) is the discount factor.
+\pause
+\item As usual, we want an optimal policy (\(\pi\)) that maximizes expected future reward.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgafb8e18}]{POMDPs rely on a belief update step, which itself can be an MDP.}
+\begin{frame}[label={sec:orgce381a3}]{POMDPs rely on a unique belief update step as a part of the algorithm.}
 \begin{itemize}
 \item a
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgace4593}]{Value and policy function parameterizations}
+\begin{frame}[label={sec:orga4e21a8}]{Notes on theory, undecidability, and intractability}
 \begin{itemize}
-\item a
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:org6e7b2c9}]{The need for approximations}
-\begin{itemize}
-\item a
-\end{itemize}
-\end{frame}
-
-\begin{frame}[label={sec:orgdab8c83}]{Theory and undecidability}
-\begin{itemize}
-\item a
+\item 
 \end{itemize}
 \end{frame}
 
 \section{POMDP Variants and Applications}
-\label{sec:orgd471382}
+\label{sec:org7111265}
 
-\begin{frame}[label={sec:org398f9e8}]{Test}
+\begin{frame}[label={sec:orgd98e428}]{Various methods of solving/approximating POMDPs are currently available/used.}
 \begin{itemize}
-\item a
+\item On Policy Methods
+\begin{itemize}
+\item 
+\end{itemize}
+\item Off Policy Methods
+\begin{itemize}
+\item 
+\end{itemize}
 \end{itemize}
 \end{frame}
 
 \section{Implementation Recommendations}
-\label{sec:org86ca638}
+\label{sec:orgdc5a2b6}
 
-\begin{frame}[label={sec:org3ef719a},fragile]{My favorite package: POMDPs.jl}
+\begin{frame}[label={sec:org763fe5c},fragile]{My favorite package: POMDPs.jl is my favorite because it's easy to use: Installation}
  \begin{verbatim}
 using Pkg; Pkg.add("POMDPs"); Pkg.add("QMDP");
 using POMDPs, QuickPOMDPs, POMDPTools, QMDP
+\end{verbatim}
+\end{frame}
 
+\begin{frame}[label={sec:org54ffe6b},fragile]{My favorite package: POMDPs.jl is my favorite because it's easy to use: Definitions}
+ \begin{verbatim}
 m = QuickPOMDP(
     states = ["left", "right"],
     actions = ["left", "right", "listen"],
@@ -183,7 +188,7 @@ println("Undiscounted reward was $rsum.")
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org401406d}]{Alternative Packages}
+\begin{frame}[label={sec:org320694b}]{Alternative Packages}
 \begin{itemize}
 \item \href{https://www.cs.kent.ac.uk/people/staff/mg483/code/IsoFreeBB/}{Finite-state Controllers using Branch and Bound}
 \item \href{https://github.com/mhahsler/pomdp}{pomdp}
@@ -191,24 +196,24 @@ println("Undiscounted reward was $rsum.")
 \item \href{https://longhorizon.org/trey/zmdp/}{zmdp}
 \end{itemize}
 \end{frame}
-\begin{frame}[label={sec:org91dcf76}]{Temp 1}
+\begin{frame}[label={sec:orgdfea054}]{Temp 1}
 \end{frame}
 
-\begin{frame}[label={sec:orgcb7b989}]{Temp 2}
+\begin{frame}[label={sec:orgf21baeb}]{Temp 2}
 \end{frame}
 
-\begin{frame}[label={sec:org635494e}]{Temp 3}
+\begin{frame}[label={sec:orgbe691ef}]{Temp 3}
 \end{frame}
 
-\begin{frame}[label={sec:orge4aa7b3}]{Temp 4}
+\begin{frame}[label={sec:orge61e3d2}]{Temp 4}
 \end{frame}
 
-\begin{frame}[label={sec:org1a149b7}]{Temp 5}
+\begin{frame}[label={sec:orgd687c7b}]{Temp 5}
 \end{frame}
 
-\begin{frame}[label={sec:org9887ed5}]{References}
-\nocite{*}
-\bibliographystyle{ieeetr}
+\begin{frame}[allowframebreaks,label=]{References}
+\scriptsize
+\bibliographystyle{plain}
 \bibliography{ref}
 \end{frame}
 \end{document}

@@ -42,47 +42,65 @@
   \pause
 - Unlike traditional MDPs that map from states to actions, these map from belief states(observations) to actions.
   \pause
-- Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.[[footcite:&woodcockFormalMethodsPractice2009]]
+- Exact optimal solutions yield the optimal action for each possible belief state that minimizes our cost.
+\pause
+\begin{center}
+\includegraphics[width=0.8\textwidth]{fig1.jpg}
+\end{center}
 
 ** POMDPs are defined by a tuple $(S,A,T,R,\Omega,O,\gamma)$
 - S is the set of states
   \pause
 - A is the set of actions
   \pause
-- T is the state transition probability
+- T is the state transition probability $P(s'|s,a)$
   \pause
-- R is the reward function
+- R is the reward function $R(s,a)$
   \pause
 - $\Omega$ is the set of observations
   \pause
-- O is the set of conditional observation probabilities
+- O is the set of conditional observation probabilities $P(o|s') \lor P(o|s',a)$
   \pause
 - $\gamma$ is the discount factor.
+  \pause
+- As usual, we want an optimal policy ($\pi$) that maximizes expected future reward.
 
-** POMDPs rely on a belief update step, which itself can be an MDP.
+** POMDPs rely on a unique belief update step as a part of the algorithm.
 - a
 
-** Value and policy function parameterizations
-- a
-
-** The need for approximations
-- a
-
-** Theory and undecidability
-- a
+** Notes on theory, undecidability, and intractability
+- 
 
 * POMDP Variants and Applications
 
-** Test
-- a
+** Variants of POMDPs exit to tackle certain niche problems.
+  - Confounded POMDPs (agent is not sure of the state/reward association)
+    \pause
+  - Decentralized POMDPs (multiple collaborating agents with only local information)
+    \pause
+  -
+    \pause
+  -
+
+** Various methods of solving/approximating POMDPs are currently available/used.
+- *On Policy Methods*
+  \pause
+  -
+  \pause
+- *Off Policy Methods*
+  \pause
+  -
 
 * Implementation Recommendations
 
-** My favorite package: POMDPs.jl
+** My favorite package: POMDPs.jl is my favorite because it's easy to use: Installation
 #+begin_src julia
 using Pkg; Pkg.add("POMDPs"); Pkg.add("QMDP");
 using POMDPs, QuickPOMDPs, POMDPTools, QMDP
+#+end_src
 
+** My favorite package: POMDPs.jl is my favorite because it's easy to use: Definitions
+#+begin_src julia
 m = QuickPOMDP(
     states = ["left", "right"],
     actions = ["left", "right", "listen"],
@@ -136,17 +154,11 @@ println("Undiscounted reward was $rsum.")
 - [[https://github.com/mhahsler/pomdp][pomdp]]
 - [[https://bitbucket.org/bami/pypomdp][pyPOMDP]]
 - [[https://longhorizon.org/trey/zmdp/][zmdp]]
-** Temp 1
-
-** Temp 2
-
-** Temp 3
-
-** Temp 4
-
-** Temp 5
 
 ** References
-\nocite{*}
-[[bibliographystyle:ieeetr]]
-[[bibliography:/home/johnbs/Documents/IE/Classes/Reinforcement_Learning/Presentation/ref.bib][ref]]
+:PROPERTIES:
+:BEAMER_opt: allowframebreaks,label=
+:END:
+\scriptsize
+[[bibliographystyle:plain]]
+[[bibliography:/home/johnbs/Documents/IE/Classes/Reinforcement_Learning/Presentation/ref.bib][ref.bib]]
